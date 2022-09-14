@@ -36,6 +36,8 @@ class HHru:
         else:
             print("В экземляре не объявлен пароль.")
 
+    # Необходимо вводить капчу вручную
+    # self.options.headless = False
     def auth_without_password(self):
         driver = self.driver
         driver.get(self.url)

@@ -5,7 +5,7 @@ import requests
 
 def request_raise_resume(hhtoken, xsrf, resume, proxy):
     boundary = "boundary"
-    url = "https://spb.hh.ru/applicant/resumes/touch"
+    url = "https://hh.ru/applicant/resumes/touch"
     headers = {
         'content-type': f'multipart/form-data; boundary={boundary}',
         'cookie': f'_xsrf={xsrf}; hhtoken={hhtoken};',
@@ -26,4 +26,4 @@ if __name__ == "__main__":
     xsrf = os.getenv("_xsrf")
     resume = os.getenv("resume")
     proxy = os.getenv("proxy")
-    request_raise_resume(hhtoken, xsrf, resume, {"http": proxy})
+    print(request_raise_resume(hhtoken, xsrf, resume, {"http": proxy}))
