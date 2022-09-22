@@ -130,4 +130,5 @@ dmypy.json
 
 #Custom
 .idea/
-src/
+bot.py
+main_sync.py
