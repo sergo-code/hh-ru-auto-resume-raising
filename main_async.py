@@ -11,8 +11,24 @@ from fake_useragent import UserAgent
 from status_code import status
 
 
-class HHru:
+class Schedule:
+    def __init__(self):
+        self.purpose_time = None
+        self.time_dict = None
+        self.update_time_list = None
+        self._time_dict_id_to_hour()
+
+    def _time_dict_id_to_hour(self):
+        time_list = [i for i in range(0, 24)]
+        self.time_dict = {j: f'{time_list[j]}:00' for j in range(len(time_list))}
+
+    def choice_time(self):
+        self.update_time_list = list(filter(lambda x: (self.purpose_time - x) % 4 == 0, self.time_dict))
+
+
+class HHru(Schedule):
     def __init__(self, phone, password, proxy):
+        super().__init__()
         self.phone = phone
         self.password = password
         self.proxy = proxy
@@ -20,7 +36,8 @@ class HHru:
         self.xsrf = None
         self.hhtoken = None
         self.boundary = 'boundary'
-        self.resume_dict = dict()
+        self.resume_src = dict()
+        self.resume_active = dict()
 
     async def request(self, method, url, headers=None, data=None):
         async with aiohttp.ClientSession() as session:
@@ -42,7 +59,7 @@ class HHru:
         url = 'https://hh.ru/'
         headers = {'user-agent': self.user_agent}
         response = await self.request('head', url, headers=headers)
-        assert response.status == 200
+        # assert response.status == 200
 
         cookie = str(response.headers)
         self.xsrf = re.search(r"(?<=_xsrf=).+?;", cookie).group()[:-1]
@@ -83,7 +100,7 @@ class HHru:
         url = 'https://hh.ru/account/login'
         headers, data = await self._get_request_data()
         response = await self.request('post', url, headers=headers, data=data)
-        assert response.status == 200
+        # assert response.status == 200
         cookie = str(response.headers)
         self.xsrf = re.search(r"(?<=_xsrf=).+?;", cookie).group()[:-1]
         self.hhtoken = re.search(r"(?<=hhtoken=).+?;", cookie).group()[:-1]
@@ -99,53 +116,50 @@ class HHru:
         url = 'https://hh.ru/applicant/resumes'
         headers, _ = await self._get_request_data()
         response = await self.request('get', url, headers=headers)
-        assert response.status == 200
+        # assert response.status == 200
         soup = BeautifulSoup(await response.text(), 'lxml')
         resumes = soup.select('div[data-qa="resume"]')
-        self.resume_dict = dict()
+        self.resume_src = dict()
         for resume in resumes:
             title = resume.get("data-qa-title")
             link = resume.select_one("a[data-qa='resume-title-link']").get("href")
             link = link.split("/")[-1].split("?")[0]
-            self.resume_dict[len(self.resume_dict)+1] = dict(title=title, link=link)
+            self.resume_src[title] = link
 
+    async def add_resume_active(self, title: str, time: int):
+        self.resume_active[title] = dict(resume_id=self.resume_src[title], time=time)
+        await asyncio.sleep(0.01)
 
-class User:
-    def __init__(self):
-        self.resume_id = None
-        self.purpose_time = None
-        self._time_list = [i for i in range(0, 24)]
-        self._time_dict = {j: f'{self._time_list[j]}:00' for j in range(len(self._time_list))}
-        self._update_time_list = None
-
-    def opinion_resume(self, resume):
-        print(resume)
-        key = int(input('Введите номер резюме, которое нужно поднимать: '))
-        print(self._time_dict)
-        self.resume_id = resume[key]['link']
-
-    def opinion_time(self):
-        self.purpose_time = int(input('Введите ключ времени словаря с которого начнется поднятие резюме каждые 4 часа: '))
-        self._update_time_list = list(filter(lambda x: (self.purpose_time - x) % 4 == 0, self._time_dict))
-        for i in self._update_time_list:
-            print(f'{i}:00')
+    async def del_resume_active(self, title):
+        del self.resume_active[title]
+        await asyncio.sleep(0.01)
 
 
 async def main():
     load_dotenv()
     obj = HHru(os.getenv('phone'), os.getenv('password'), {'https': os.getenv('proxy')})
-    user = User()
+
     await obj.login()
     await obj.get_resumes()
-    resume = obj.resume_dict
-    user.opinion_resume(resume)
-    user.opinion_time()
+    print(obj.resume_src)
+    title = input('Введите название резюме, которое нужно поднимать: ')
+    print(obj.time_dict)
+    obj.purpose_time = int(input('Введите ключ времени словаря с которого начнется поднятие резюме каждые 4 часа: '))
 
+    await obj.add_resume_active(title, obj.purpose_time)
+
+    obj.choice_time()
+
+    for hour in obj.update_time_list:
+        print(f'{hour}:00')
+
+    print(obj.resume_active)
+    input('Ваши настройки')
     while True:
         now_time = time.localtime(time.time())
         now_time = int(time.strftime("%H", now_time))
-        if (user.purpose_time - now_time) % 4 == 0:
-            code = await obj.raise_resume(user.resume_id)
+        if (obj.resume_active[title]['time'] - now_time) % 4 == 0:
+            code = await obj.raise_resume(obj.resume_active[title]['resume_id'])
             if code == 409:
                 print(status(code))
                 await asyncio.sleep(60)
@@ -158,7 +172,7 @@ async def main():
             else:
                 if await obj.check_proxy():
                     await obj.login()
-                    code = await obj.raise_resume(user.resume_id)
+                    code = await obj.raise_resume(obj.resume_active[title]['resume_id'])
                     if code == 409:
                         print(status(code))
                         await asyncio.sleep(60)
