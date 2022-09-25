@@ -2,32 +2,12 @@ import asyncio
 import aiohttp
 import aiofiles
 import json
-import os
 import re
-import time
-from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
 
-from status_code import status
 
-
-class Schedule:
-    def __init__(self):
-        self.purpose_time = None
-        self.time_dict = None
-        self.update_time_list = None
-        self._time_dict_id_to_hour()
-
-    def _time_dict_id_to_hour(self):
-        time_list = [i for i in range(0, 24)]
-        self.time_dict = {j: f'{time_list[j]}:00' for j in range(len(time_list))}
-
-    def choice_time(self):
-        self.update_time_list = list(filter(lambda x: (self.purpose_time - x) % 4 == 0, self.time_dict))
-
-
-class HHru(Schedule):
+class HHru:
     def __init__(self, phone, password, proxy):
         super().__init__()
         self.phone = phone
@@ -143,64 +123,5 @@ class HHru(Schedule):
         await asyncio.sleep(0.01)
 
     async def del_resume_active(self, title: str) -> None:
-        del self.resume_active[title]
         await asyncio.sleep(0.01)
-
-
-async def main():
-    load_dotenv()
-    obj = HHru(os.getenv('phone'), os.getenv('password'), {'https': os.getenv('proxy')})
-
-    await obj.login()
-    await obj.get_resumes()
-    print(obj.resume_src)
-    title = input('Введите название резюме, которое нужно поднимать: ')
-    print(obj.time_dict)
-    obj.purpose_time = int(input('Введите ключ времени словаря с которого начнется поднятие резюме каждые 4 часа: '))
-
-    await obj.add_resume_active(title, obj.purpose_time)
-
-    obj.choice_time()
-
-    for hour in obj.update_time_list:
-        print(f'{hour}:00')
-
-    print(obj.resume_active)
-    input('Ваши настройки')
-    while True:
-        now_time = time.localtime(time.time())
-        now_time = int(time.strftime("%H", now_time))
-        if (obj.resume_active[title]['time'] - now_time) % 4 == 0:
-            code = await obj.raise_resume(obj.resume_active[title]['resume_id'])
-            if code == 409:
-                print(status(code))
-                await asyncio.sleep(60)
-            elif code == 200:
-                print(status(code))
-                await asyncio.sleep(4*60*60)
-            elif code == 500:
-                print(code)
-                break
-            else:
-                if await obj.check_proxy():
-                    await obj.login()
-                    code = await obj.raise_resume(obj.resume_active[title]['resume_id'])
-                    if code == 409:
-                        print(status(code))
-                        await asyncio.sleep(60)
-                    elif code == 200:
-                        print(status(code))
-                        await asyncio.sleep(4*60*60)
-                    else:
-                        print(code)
-                        break
-                else:
-                    print(status(0))
-                    break
-
-
-if __name__ == '__main__':
-    try:
-        asyncio.run(main())
-    except KeyboardInterrupt:
-        pass
+        return self.resume_active.pop(title, False)
