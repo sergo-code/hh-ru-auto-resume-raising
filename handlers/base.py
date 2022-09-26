@@ -27,7 +27,8 @@ async def profile(message: types.Message) -> None:
         text = '<b>Ваши данные</b>\n' \
                f"Телефон: {os.getenv('phone')}\n" \
                f"Пароль: {os.getenv('password')}\n" \
-               f"Прокси: {os.getenv('proxy')}"
+               f"Прокси: {'не используется' if os.getenv('proxy') == 'None' else os.getenv('proxy')}\n" \
+               f"Уведомления: {'включены' if obj.notifications else 'отключены'}"
         await message.answer(text, parse_mode='html')
 
 
@@ -79,6 +80,13 @@ async def list_active_resume(message: types.Message) -> None:
         await message.answer(text, parse_mode='html')
 
 
+async def switch_notifications(message: types.Message) -> None:
+    if await is_admin(message.from_id):
+        obj.notifications = False if obj.notifications else True
+        text = 'Включил' if obj.notifications else 'Отключил'
+        await message.answer(text, parse_mode='html')
+
+
 def register_handler_base(dp: Dispatcher):
     dp.register_message_handler(start, commands=['start'])
     dp.register_message_handler(auth, text=[TextButtonList['auth']])
@@ -86,3 +94,4 @@ def register_handler_base(dp: Dispatcher):
     dp.register_message_handler(update_list_resume, text=[TextButtonList['update_list_resume']])
     dp.register_message_handler(list_resume, text=[TextButtonList['list_resume']])
     dp.register_message_handler(list_active_resume, text=[TextButtonList['list_active_resume']])
+    dp.register_message_handler(switch_notifications, text=[TextButtonList['notifications']])

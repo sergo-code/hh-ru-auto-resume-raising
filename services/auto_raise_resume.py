@@ -53,6 +53,7 @@ async def tasks() -> None:
                             # Алгоритм поднятия резюме
                             code = await algorithm(title, now_time_hour, now_time_minute)
                             text = f"{status(code)}\n{time.strftime('%H:%M:%S')}"
-                            await bot.send_message(os.getenv('admin_tg'), text)
+                            if obj.notifications:
+                                await bot.send_message(os.getenv('admin_tg'), text)
                             if code == 0 or code == 1:
                                 break

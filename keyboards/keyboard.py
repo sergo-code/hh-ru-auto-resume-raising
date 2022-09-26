@@ -9,6 +9,7 @@ TextButtonList = {
     'del_resume': '❌ Удалить',
     'auth': '🚀️ Авторизоваться',
     'update_list_resume': '📝 Обновить список резюме',
+    'notifications': '🔔 Вкл/выкл уведомления',
 }
 
 ButtonList = dict()
@@ -19,6 +20,7 @@ for key in TextButtonList.keys():
 
 home = ReplyKeyboardMarkup(resize_keyboard=True)\
     .add(ButtonList['profile'])\
+    .insert(ButtonList['notifications'])\
     .add(ButtonList['list_resume'])\
     .insert(ButtonList['list_active_resume'])\
     .add(ButtonList['add_resume'])\

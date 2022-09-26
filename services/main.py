@@ -20,6 +20,7 @@ class HHru:
         self.boundary = 'boundary'
         self.resume_src = dict()
         self.resume_active = dict()
+        self.notifications = True
 
     async def request(self, method, url, headers=None, data=None):
         async with aiohttp.ClientSession() as session:
