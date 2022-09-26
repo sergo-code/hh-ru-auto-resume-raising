@@ -1,6 +1,7 @@
 import time
 import os
 import asyncio
+from dotenv import load_dotenv
 
 from services.connecting import obj, bot
 from .status_code import status
@@ -30,8 +31,9 @@ async def algorithm(title, now_time_hour, now_time_minute):
 
 
 async def tasks() -> None:
+    load_dotenv()
     code = None
-    os.environ['TZ'] = 'Europe/Moscow'
+    os.environ['TZ'] = os.getenv('time_zone')
     time.tzset()
     # Проверка на ошибку авторизации (1) и прокси (0)
     while True and (code != 0 or code != 1):
