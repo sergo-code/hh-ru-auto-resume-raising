@@ -11,4 +11,4 @@ load_dotenv()
 bot = Bot(token=os.getenv('bot_token'))
 dp = Dispatcher(bot, storage=MemoryStorage())
 
-obj = HHru(os.getenv('phone'), os.getenv('password'), {'https': os.getenv('proxy')})
+obj = HHru(os.getenv('phone'), os.getenv('password'), os.getenv('proxy'))

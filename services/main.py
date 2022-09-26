@@ -12,7 +12,8 @@ class HHru:
         super().__init__()
         self.phone = phone
         self.password = password
-        self.proxy = proxy
+        self.proxy = {'https': proxy}
+        self.switch = False if proxy == 'None' else True
         self.user_agent = UserAgent().chrome
         self.xsrf = None
         self.hhtoken = None
@@ -23,18 +24,14 @@ class HHru:
     async def request(self, method, url, headers=None, data=None):
         async with aiohttp.ClientSession() as session:
             action = getattr(session, method)
-            async with action(url, headers=headers, data=data, proxy=self.proxy['https']) as response:
-                await response.text()
-                return response
-
-    async def check_proxy(self) -> bool:
-        url = 'https://api.ipify.org?format=json'
-        response = await self.request('get', url)
-        ip_address = self.proxy['https'].split('@')[-1].split(':')[0]
-        if ip_address == json.loads(await response.text())['ip']:
-            return True
-        else:
-            return False
+            if self.switch:
+                async with action(url, headers=headers, data=data, proxy=self.proxy['https']) as response:
+                    await response.text()
+                    return response
+            else:
+                async with action(url, headers=headers, data=data) as response:
+                    await response.text()
+                    return response
 
     async def _get_cookie_anonymous(self) -> None:
         url = 'https://hh.ru/'

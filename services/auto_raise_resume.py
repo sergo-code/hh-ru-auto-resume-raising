@@ -18,18 +18,15 @@ async def algorithm(title, now_time_hour, now_time_minute):
         obj.resume_active[title]['last_raise'] = f'{now_time_hour}:{now_time_minute}'
         return code
     else:
-        if await obj.check_proxy():
-            await obj.login()
-            code = await obj.raise_resume(obj.resume_active[title]['resume_id'])
-            if code == 409:
-                return code
-            elif code == 200:
-                obj.resume_active[title]['last_raise'] = f'{now_time_hour}:{now_time_minute}'
-                return code
-            else:
-                return 1
+        await obj.login()
+        code = await obj.raise_resume(obj.resume_active[title]['resume_id'])
+        if code == 409:
+            return code
+        elif code == 200:
+            obj.resume_active[title]['last_raise'] = f'{now_time_hour}:{now_time_minute}'
+            return code
         else:
-            return 0
+            return 1
 
 
 async def tasks() -> None:
