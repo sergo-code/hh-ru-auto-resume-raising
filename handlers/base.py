@@ -28,7 +28,8 @@ async def profile(message: types.Message) -> None:
                f"Телефон: {os.getenv('phone')}\n" \
                f"Пароль: {os.getenv('password')}\n" \
                f"Прокси: {'не используется' if os.getenv('proxy') == 'None' else os.getenv('proxy')}\n" \
-               f"Уведомления: {'включены' if obj.notifications else 'отключены'}"
+               f"Уведомления: {'включены' if obj.notifications else 'отключены'}\n" \
+               f"Часовой пояс: {os.getenv('time_zone')}"
         await message.answer(text, parse_mode='html')
 
 
