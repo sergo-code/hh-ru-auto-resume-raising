@@ -75,7 +75,7 @@ async def list_active_resume(message: types.Message) -> None:
                     text += f"\n\nПоследние поднятие:\n" \
                             f"<code>{value['last_raise']}</code>" \
                             f"\n\nСледующее поднятие:" \
-                            f"\n<code>{(hour + 4) % 24}:{(minute) % 60} (+~1мин)\n"
+                            f"\n<code>{(hour + 4) % 24}:{minute % 60} (+~1мин)</code>\n"
         else:
             text = 'Ни одно резюме не добавлено в расписание.'
         await message.answer(text, parse_mode='html')

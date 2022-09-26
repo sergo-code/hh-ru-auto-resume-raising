@@ -27,7 +27,7 @@ async def algorithm(title, now_time_hour, now_time_minute):
             obj.resume_active[title]['last_raise'] = f'{now_time_hour}:{now_time_minute}'
             return code
         else:
-            return 1
+            return code
 
 
 async def tasks() -> None:
