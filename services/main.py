@@ -116,8 +116,8 @@ class HHru:
 
     async def add_resume_active(self, title: str, hour: int, minute: int) -> None:
         self.resume_active[title] = dict(resume_id=self.resume_src[title],
-                                         time=dict(hour=hour, minute=minute),
-                                         last_raise='99:99')
+                                         time=dict(hour=hour, minute=minute, seconds=0),
+                                         ltime=dict(hour=(hour-4) % 24))
         await asyncio.sleep(0.01)
 
     async def del_resume_active(self, title: str) -> None:

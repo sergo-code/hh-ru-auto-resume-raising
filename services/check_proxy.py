@@ -6,13 +6,11 @@ def is_valid(proxy) -> bool:
     try:
         requests.head(url, proxies={'https': proxy})
         return True
-    except requests.exceptions.ProxyError: #  or AttributeError
+    except requests.exceptions.ProxyError:
         return False
 
 
 if __name__ == '__main__':
-    import os
-    from dotenv import load_dotenv
+    from services.env import Config
 
-    load_dotenv()
-    print(is_valid({'https': os.getenv('proxy')}))
+    print(is_valid({'https': Config.proxy}))

@@ -1,12 +1,9 @@
-import os
-from dotenv import load_dotenv
-
 from aiogram import executor
 
 from handlers import (register_handler_base,
                       register_handler_add_to_schedule,
                       register_handler_delete_from_schedule)
-from services import on_startup, on_shutdown, load_tokens_auth
+from services import on_startup, on_shutdown, load_tokens_auth, Config
 from services.connecting import dp
 from services.check_proxy import is_valid
 from services.status_code import status
@@ -20,8 +17,7 @@ register_handler_delete_from_schedule(dp)
 
 
 if __name__ == '__main__':
-    load_dotenv()
-    proxy = os.getenv('proxy')
+    proxy = Config.proxy
     if is_valid(proxy) or proxy == 'None':
         executor.start_polling(dp, skip_updates=True, on_startup=on_startup, on_shutdown=on_shutdown)
     else:

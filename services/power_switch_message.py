@@ -4,7 +4,7 @@ import time
 import os
 
 from .auto_raise_resume import tasks
-from services.connecting import bot
+from .connecting import bot
 
 
 async def on_startup(dispatcher: Dispatcher) -> None:

@@ -1,5 +1,5 @@
 import json
-from services.connecting import obj
+from .connecting import obj
 
 
 def load_tokens_auth():

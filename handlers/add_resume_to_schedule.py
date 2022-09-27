@@ -46,8 +46,7 @@ async def set_time(message: types.Message, state=FSMContext) -> None:
         minute = lenght[1]
         if hour.isnumeric() and minute.isnumeric() and len(lenght) == 2:
             if (0 <= int(hour) < 24) and (0 <= int(minute) < 60):
-                time_ = data['time'].split(':')
-                await obj.add_resume_active(data['title'], time_[0], time_[1])
+                await obj.add_resume_active(data['title'], int(hour), int(minute))
                 text = f'<b>Добавлено новое расписание</b>' \
                        f"\n{data['title']}" \
                        f"\n{data['time']}"

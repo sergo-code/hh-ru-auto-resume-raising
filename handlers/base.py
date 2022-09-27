@@ -4,8 +4,7 @@ from aiogram import types, Dispatcher
 from services import is_admin
 from keyboards.keyboard import home, TextButtonList
 from services.connecting import obj
-
-import os
+from services.env import Config
 
 
 async def start(message: types.Message) -> None:
@@ -25,11 +24,11 @@ async def auth(message: types.Message) -> None:
 async def profile(message: types.Message) -> None:
     if await is_admin(message.from_id):
         text = '<b>Ваши данные</b>\n' \
-               f"Телефон: {os.getenv('phone')}\n" \
-               f"Пароль: {os.getenv('password')}\n" \
-               f"Прокси: {'не используется' if os.getenv('proxy') == 'None' else os.getenv('proxy')}\n" \
+               f"Телефон: {Config.phone}\n" \
+               f"Пароль: {Config.password}\n" \
+               f"Прокси: {'не используется' if Config.proxy == 'None' else Config.proxy}\n" \
                f"Уведомления: {'включены' if obj.notifications else 'отключены'}\n" \
-               f"Часовой пояс: {os.getenv('time_zone')}"
+               f"Часовой пояс: {Config.time_zone}"
         await message.answer(text, parse_mode='html')
 
 
@@ -63,19 +62,12 @@ async def list_active_resume(message: types.Message) -> None:
         if len(obj.resume_active) > 0:
             text = '<b>Расписание</b>'
             for title, value in obj.resume_active.items():
-                text += f"\n<code>{title}</code>"
-                if value['last_raise'] == '99:99':
-                    text += f"\n\nПоследние поднятие:\n" \
-                            f"<u>нет данных</u>" \
-                            f"\n\nСледующее поднятие:" \
-                            f"\n<u>нет данных</u>\n"
-                else:
-                    hour = int(value['last_raise'].split(':')[0])
-                    minute = int(value['last_raise'].split(':')[1])
-                    text += f"\n\nПоследние поднятие:\n" \
-                            f"<code>{value['last_raise']}</code>" \
-                            f"\n\nСледующее поднятие:" \
-                            f"\n<code>{(hour + 4) % 24}:{minute % 60} (+~1мин)</code>\n"
+                text += f"\n<code>{title}</code>\n"
+
+                hour = int(obj.resume_active[title]['time']['hour'])
+                minute = int(obj.resume_active[title]['time']['minute'])
+                for temp in range(0, 21, 4):
+                    text += f"\n<code>{(hour + temp) % 24}:{minute}</code>"
         else:
             text = 'Ни одно резюме не добавлено в расписание.'
         await message.answer(text, parse_mode='html')
