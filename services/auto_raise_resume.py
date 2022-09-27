@@ -46,8 +46,7 @@ async def tasks() -> None:
     time.tzset()
     # Проверка на ошибку авторизации (1) и прокси (0)
     while True and (code != 0 or code != 1):
-        sleep_time_seconds = int(time.strftime("%S"))
-        await asyncio.sleep(1)  # 60 - sleep_time_seconds
+        await asyncio.sleep(1)
         # Проверяет есть ли резюме, которые нужно поднимать
         if len(obj.resume_active) > 0:
             now_time_hour = int(time.strftime("%H"))
@@ -67,8 +66,8 @@ async def tasks() -> None:
 
                     # Алгоритм поднятия резюме
                     code = await algorithm(title)
-                    text = f"{status(code)}\n{time.strftime('%H:%M:%S')}"
+                    text = f"<b>{title}</b>\n{status(code)}\n{time.strftime('%H:%M:%S')}"
                     if obj.notifications:
-                        await bot.send_message(Config.admin_tg, text)
+                        await bot.send_message(Config.admin_tg, text, parse_mode='html')
                     if code == 0 or code == 1:
                         break

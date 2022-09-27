@@ -62,7 +62,7 @@ async def list_active_resume(message: types.Message) -> None:
         if len(obj.resume_active) > 0:
             text = '<b>Расписание</b>'
             for title, value in obj.resume_active.items():
-                text += f"\n<code>{title}</code>\n"
+                text += f"\n\n<code>{title}</code>\n"
 
                 hour = int(obj.resume_active[title]['time']['hour'])
                 minute = int(obj.resume_active[title]['time']['minute'])
