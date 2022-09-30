@@ -4,13 +4,11 @@ WORKDIR  /tmp
 RUN git clone https://github.com/sergo-code/hh-ru-auto-resume-raising.git --branch main --depth 1
 
 FROM python:3
-RUN apt update && apt -y install mc
-RUN useradd -m hh -s /bin/bash
+RUN apt update && useradd -m hh -s /bin/bash
 COPY --from=build /tmp/hh-ru-auto-resume-raising /home/hh/
 
 COPY docker-entrypoint.sh /usr/local/bin
-RUN chown -R hh:hh /home/hh
-RUN chmod 777 /usr/local/bin/docker-entrypoint.sh
+RUN chown -R hh:hh /home/hh && chmod 777 /usr/local/bin/docker-entrypoint.sh
 
 USER hh
 WORKDIR  /home/hh/
