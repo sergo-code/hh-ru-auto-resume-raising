@@ -62,7 +62,7 @@ async def tasks() -> None:
                 if value['ltime']['hour'] != now_time_hour and \
                         (value['time']['hour'] - now_time_hour) % 4 == 0 and \
                         value['time']['minute'] <= now_time_minute and \
-                        value['time']['seconds'] < now_time_seconds:
+                        (value['time']['seconds'] < now_time_seconds or value['time']['seconds'] == 59):
 
                     # Алгоритм поднятия резюме
                     code = await algorithm(title)
