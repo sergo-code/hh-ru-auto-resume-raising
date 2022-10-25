@@ -1,4 +1,6 @@
 import asyncio
+import time
+
 import aiohttp
 import aiofiles
 import json
@@ -115,9 +117,14 @@ class HHru:
             return False
 
     async def add_resume_active(self, title: str, hour: int, minute: int) -> None:
+        result = time.localtime(time.time())
+        t = (result.tm_year, result.tm_mon, result.tm_mday, hour, minute, result.tm_sec, result.tm_wday,
+             result.tm_yday, result.tm_isdst)
+
+        unixtime = int(time.mktime(t))
         self.resume_active[title] = dict(resume_id=self.resume_src[title],
-                                         time=dict(hour=hour, minute=minute, seconds=0),
-                                         ltime=dict(hour=(hour-4) % 24))
+                                         time=dict(hour=hour, minute=minute, seconds=result.tm_sec),
+                                         unixtime=unixtime, lunixtime=unixtime-60*60*4)
         await asyncio.sleep(0.01)
 
     async def del_resume_active(self, title: str) -> None:

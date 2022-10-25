@@ -66,8 +66,12 @@ async def list_active_resume(message: types.Message) -> None:
 
                 hour = int(obj.resume_active[title]['time']['hour'])
                 minute = int(obj.resume_active[title]['time']['minute'])
+                seconds = int(obj.resume_active[title]['time']['seconds'])
                 for temp in range(0, 21, 4):
-                    text += f"\n<code>{(hour + temp) % 24}:{minute}</code>"
+                    text += f"\n<code>{(hour + temp) % 24}:" \
+                            f"{minute if minute > 9 else f'0{minute}'}:" \
+                            f"{seconds if seconds > 9 else f'0{seconds}'}</code>"
+
         else:
             text = 'Ни одно резюме не добавлено в расписание.'
         await message.answer(text, parse_mode='html')

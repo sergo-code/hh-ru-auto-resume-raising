@@ -9,10 +9,13 @@ from .status_code import status
 
 async def update_time(title):
     await asyncio.sleep(0.01)
-    obj.resume_active[title]['time']['hour'] = (int(time.strftime('%H')) + 4) % 24
-    obj.resume_active[title]['time']['minute'] = int(time.strftime('%M'))
-    obj.resume_active[title]['time']['seconds'] = int(time.strftime('%S'))
-    obj.resume_active[title]['ltime']['hour'] = int(time.strftime('%H'))
+    _time = int(time.time())
+    _time_obj = time.localtime(_time)
+    obj.resume_active[title]['unixtime'] = _time + (60 * 60 * 4)
+    obj.resume_active[title]['lunixtime'] = _time
+    obj.resume_active[title]['time']['hour'] = (int(_time_obj.tm_hour) + 4) % 24
+    obj.resume_active[title]['time']['minute'] = int(_time_obj.tm_min)
+    obj.resume_active[title]['time']['seconds'] = int(_time_obj.tm_sec)
 
 
 async def algorithm(title):
@@ -49,20 +52,12 @@ async def tasks() -> None:
         await asyncio.sleep(1)
         # Проверяет есть ли резюме, которые нужно поднимать
         if len(obj.resume_active) > 0:
-            now_time_hour = int(time.strftime("%H"))
-            now_time_minute = int(time.strftime("%M"))
-            now_time_seconds = int(time.strftime("%S"))
 
             # Проходит по каждому резюме отдельно
             for title, value in obj.resume_active.items():
-                # Проверка: если последние поднятие не равно текущему часу
-                # Проверка: поднятие раз в 4 часа
-                # Проверка: минуты меньше или равно текущему
-                # Проверка: секунды меньше текущих
-                if value['ltime']['hour'] != now_time_hour and \
-                        (value['time']['hour'] - now_time_hour) % 4 == 0 and \
-                        value['time']['minute'] <= now_time_minute and \
-                        (value['time']['seconds'] < now_time_seconds or value['time']['seconds'] == 59):
+
+                if time.localtime(value['lunixtime']).tm_hour != time.localtime(time.time()).tm_hour and \
+                        value['unixtime'] - int(time.time()) < 0:
 
                     # Алгоритм поднятия резюме
                     code = await algorithm(title)
