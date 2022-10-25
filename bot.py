@@ -17,8 +17,17 @@ register_handler_delete_from_schedule(dp)
 
 
 if __name__ == '__main__':
-    proxy = Config.proxy
-    if is_valid(proxy) or proxy == 'None':
-        executor.start_polling(dp, skip_updates=True, on_startup=on_startup, on_shutdown=on_shutdown)
-    else:
-        print(status(0))
+    try:
+        import time
+        time.tzset()
+        key = True
+    except AttributeError:
+        print('time.tzset() не поддерживается вашей ОС')
+        key = False
+
+    if key:
+        proxy = Config.proxy
+        if is_valid(proxy) or proxy == 'None':
+            executor.start_polling(dp, skip_updates=True, on_startup=on_startup, on_shutdown=on_shutdown)
+        else:
+            print(status(0))
