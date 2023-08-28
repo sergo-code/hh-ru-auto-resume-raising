@@ -38,4 +38,4 @@ jobs:
           push: true
           tags: |
             mitetenov/hh-ru-auto-resume-raising-bot:latest 
-            mitetenov/hh-ru-auto-resume-raising-bot:${{ steps.current-time.outputs.readableTime }}
+            mitetenov/hh-ru-auto-resume-raising-bot:${{ steps.current-time.outputs.formattedTime }}
