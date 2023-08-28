@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  hh-ru-auto-resume-raising-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: hh-ru-auto-resume-raising-bot:latest
+    volumes:
+      - ./.env_pub:/.env
+    restart: unless-stopped
