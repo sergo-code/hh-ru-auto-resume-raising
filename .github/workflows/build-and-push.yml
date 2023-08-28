@@ -9,6 +9,11 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
+      - name: Get current time
+        uses: josStorer/get-current-time@v2
+        id: current-time
+        with:
+          format: YYYYMMDD-HH
       -
         name: Checkout
         uses: actions/checkout@v3
@@ -31,4 +36,4 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: mitetenov/hhbot:latest
+          tags: mitetenov/hh-ru-auto-resume-raising-bot:latest mitetenov/hh-ru-auto-resume-raising-bot:${{ steps.current-time.outputs.readableTime }}

@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: hh-ru-auto-resume-raising-bot:latest
+    image: mitetenov/hh-ru-auto-resume-raising-bot:latest
     volumes:
-      - ./.env_pub:/.env
+      - ./.env:/.env
     restart: unless-stopped
