@@ -36,4 +36,6 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: mitetenov/hh-ru-auto-resume-raising-bot:latest mitetenov/hh-ru-auto-resume-raising-bot:${{ steps.current-time.outputs.readableTime }}
+          tags: |
+            mitetenov/hh-ru-auto-resume-raising-bot:latest 
+            mitetenov/hh-ru-auto-resume-raising-bot:${{ steps.current-time.outputs.readableTime }}
