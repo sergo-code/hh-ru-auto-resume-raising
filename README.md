@@ -15,6 +15,14 @@ mv .env_pub .env
  - без выделения переменных ковычками!
  - в поле proxy оставить 1 из вариантов (если нет прокси, то proxy=None)
 
+Для запуска в Docker:
+
+```
+docker compose up -d
+```
+
+Для нативного запуска:
+
 Установить зависимости
 ```
 python3 -m pip install -r requirements.txt
