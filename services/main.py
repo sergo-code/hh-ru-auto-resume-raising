@@ -109,7 +109,7 @@ class HHru:
             self.resume_src = dict()
             for resume in resumes:
                 title = resume.get("data-qa-title")
-                link = resume.select_one("a[data-qa='resume-title-link']").get("href")
+                link = resume.select_one("a[data-sentry-element='Card']").get("href")
                 link = link.split("/")[-1].split("?")[0]
                 self.resume_src[title] = link
             return True
